@@ -22,18 +22,21 @@ public:
     class LinkNode {
     public:
         T _data; ///数据域
+        unsigned long _cost; ///容量
         const char * _key; ///查找数据的key
         double _time; ///数据操作时间
         LinkNode *_pre; /// 当前节点上一个节点
         LinkNode *_next; ///当前节点下一个节点
         LinkNode();
         ~LinkNode();
-        LinkNode(T data,LinkNode *pre,LinkNode *next,const char *key,double time);
+        LinkNode(T data,LinkNode *pre,LinkNode *next,const char *key,double time,unsigned long cost);
     };
     LinkList();
     ~LinkList();
-    ///获取链表内容大小
+    /// 获取链表内容大小
     int size();
+    /// 缓存数据容量
+    int _totalCost;
     ///头插法插入数据到链表头部位置
     LinkNode * insert(T object);
     ///查找元素
@@ -55,7 +58,7 @@ public:
     ///销毁链表的元素
     void clear_by_completion(void(*for_each)(T));
 private:
-    ///链表长度
+    /// 链表长度
     int _size;
     ///头节点
     LinkNode *_header;
@@ -68,17 +71,18 @@ private:
 #pragma mark - LinkNode Implementation
 
 template<class T>
-LinkList<T>::LinkNode::LinkNode() : LinkNode(NULL,NULL,NULL,"",0) {
+LinkList<T>::LinkNode::LinkNode() : LinkNode(NULL,NULL,NULL,"",DBL_MAX,NSIntegerMax) {
     
 }
 
 template<class T>
-LinkList<T>::LinkNode::LinkNode(T data,LinkNode *pre,LinkNode *next,const char *key,double time) {
+LinkList<T>::LinkNode::LinkNode(T data,LinkNode *pre,LinkNode *next,const char *key,double time,unsigned long cost) {
     this->_data = data;
     this->_pre = pre;
     this->_next = next;
     this->_key = key;
     this->_time = time;
+    this->_cost = cost;
 }
 
 template<class T>
@@ -89,9 +93,10 @@ LinkList<T>::LinkNode::~LinkNode() {
 #pragma mark - LinkList
 template<class T>
 LinkList<T>::LinkList() {
+    _size = 0;
+    _totalCost = 0;
     _header = new LinkNode();
     _header->_next = _header->_pre = _header;
-    _size = 0;
 }
 
 template<class T>
@@ -146,6 +151,7 @@ T LinkList<T>::remove_by(LinkNode *pFind) {
     pre->_next = pFind->_next;
     pFind->_next->_pre = pre;
     T data = pFind->_data;
+    _totalCost -= pFind->_cost;
     delete pFind;
     _size--;
     return data;
@@ -169,7 +175,8 @@ T LinkList<T>::remove_by(T obj) {
     
     pre->_next = deleteNode->_next;
     
-    T &data = deleteNode->_data;
+    T data = deleteNode->_data;
+    _totalCost -= deleteNode->_cost;
     delete deleteNode;
     _size--;
     
@@ -227,11 +234,13 @@ void LinkList<T>::clear_by_completion(void(*for_each)(T)) {
         cur = _header;
         _header = _header->_next;
         T data = cur->_data;
-        if (data != NULL) {
+        if (data != NULL && for_each != NULL) {
             (*for_each)(data);
         }
         delete cur;
     }
+    _size = 0;
+    _totalCost = 0;
     
 }
 

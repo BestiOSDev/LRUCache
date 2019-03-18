@@ -31,6 +31,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setObject:(nullable id)object forKey:(id)key;
 
 /**
+ 设置缓存中指定键的值，并将键值关联
+ 与指定成本配对。
+ 
+ 对象要存储在缓存中的对象。如果为nil，则调用`removeObjectForKey`。
+ key与值关联的键。如果为nil，则此方法无效。
+ cost与键值对关联的成本。
+ 与NSMutableDictionary对象不同，缓存不会复制密钥
+ 放入它的对象。
+ */
+- (void)setObject:(nullable id)object forKey:(id)key withCost:(NSUInteger)cost;
+
+/**
  删除缓存中指定键的值。
  
  key标识要删除的值的键。如果为nil，则此方法无效。
@@ -42,8 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)removeAllObjects;
 
-/** The number of objects in the cache (read-only) */
+/** 缓存数据总数 */
 @property (readonly) NSUInteger totalCount;
+/** 缓存数据总容量 */
+@property (readonly) NSUInteger totalCost;
 
 #pragma mark - Limit
 
@@ -51,6 +65,15 @@ NS_ASSUME_NONNULL_BEGIN
  default is 10 最大缓存10个对象
  */
 @property (nonatomic,assign) NSUInteger countLimit;
+/**
+ 按设定时间缓存
+ */
+@property (nonatomic,assign) NSUInteger ageLimit;
+
+/**
+ 按容量缓存
+ */
+@property (nonatomic,assign) NSUInteger costLimit;
 
 /**
  间隔多少秒检查缓存情况 默认5秒间隔
