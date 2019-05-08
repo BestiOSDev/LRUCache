@@ -1,7 +1,6 @@
 
 LRUCache 是学习 [YYCache](https://github.com/ibireme/YYCache) 后自己动手写的一个缓存库 目前只把 YYMemoryCache 中的功能给实现了 , 其中部分代码是截取自 YYCache 中 ,本人根据其思路 进行适当的改进 纯属交流学习.
 
-
 LRU 缓存的思想就是 将最近使用过的缓存 移动到链表头部 当超出限时后 将链表尾部缓存移除 ,内部提供了 Linklist做为保存缓存数据的容器
 
 
